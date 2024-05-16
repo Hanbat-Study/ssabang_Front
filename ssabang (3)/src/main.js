@@ -15,7 +15,7 @@ app.use(createNaverMap, {
 const axiosInstance = axios.create({
   timeout: 5000,
 });
-axios.defaults.baseURL = "http://192.168.120.64:8080/api";
+axios.defaults.baseURL = "http://13.209.31.220:8080/api";
 app.config.globalProperties.$axios = axiosInstance;
 
 app.use(router);
