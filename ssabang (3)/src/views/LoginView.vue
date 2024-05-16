@@ -24,12 +24,12 @@ export default {
   name: "LoginView",
   setup() {
     const kakao_client_id = "67fcf4b58b7e2353ef43cbb92a613625";
-    const kakao_redirect_uri = "http://192.168.120.64:5000/login/kakao";
+    const kakao_redirect_uri = "https://ssabang1.netlify.app/login/kakao";
     const naver_client_id = "eqj7T13SdsHAhjitFbRE";
-    const naver_redirect_uri = "http://192.168.120.64:5000/login/naver";
+    const naver_redirect_uri = "https://ssabang1.netlify.app/login/naver";
     const google_client_id =
       "999021316075-clb4c983fqb6ia0da76j7sg1v10i2je3.apps.googleusercontent.com";
-    const google_redirect_uri = "http://localhost:5000/login/oauth2/code/google";
+    const google_redirect_uri = "https://ssabang1.netlify.app/login/oauth2/code/google";
 
     const kakaoLoginLink = computed(
       () =>
