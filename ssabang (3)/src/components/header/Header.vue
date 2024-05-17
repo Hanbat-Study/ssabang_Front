@@ -6,7 +6,7 @@
           src="../../assets/ssabang-logo.png"
           alt="ssabang logo"
           @click="goToMain"
-          width="100px"
+          width="80px"
           height="80px"
           style="cursor: pointer"
         />
@@ -27,7 +27,7 @@
     <div class="nav-and-auth">
       <div class="nav-links">
         <div v-if="isLoggedIn">
-          <router-link to="/campus" class="nav-link">캠퍼스 보기</router-link>
+          <button @click="goToCampus" class="nav-link campus-button">캠퍼스 보기</button>
           <a href="/favorites" class="nav-link">관심목록</a>
         </div>
         <router-link to="/board" class="nav-link">싸방게시판</router-link>
@@ -55,6 +55,7 @@
 import { ref, computed, onMounted, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useSearch } from "../../services/useSearch.js";
+import { getUserCampus } from "../../api/user.js";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -74,7 +75,6 @@ function updateUserProfile() {
   userProfile.value = profile;
   userName.value = profile ? profile.name : null;
   isLoggedIn.value = JSON.parse(localStorage.getItem("isFirst")); // profile이 있으면 true, 없으면 false로 설정합니다.
-  console.log(localStorage.getItem("isFirst"));
 }
 
 onMounted(() => {
@@ -134,6 +134,25 @@ const logout = async () => {
 
 const goToMain = () => {
   router.replace("/");
+};
+const goToCampus = () => {
+  getUserCampus(
+    (response) => {
+      const { latitude, longitude } = response.data.data;
+      router.push({
+        name: "map",
+        query: {
+          type: "ssafy",
+          latitude: latitude,
+          longitude: longitude,
+          zoom: 14, // 원하는 줌 레벨 설정
+        },
+      });
+    },
+    (error) => {
+      console.error("Error fetching campus location:", error);
+    }
+  );
 };
 
 const handleAuth = () => {
@@ -197,6 +216,7 @@ const openChatRoom = () => {
 }
 
 .logo-container {
+  margin-left: 10px;
   margin-right: 20px;
 }
 
@@ -241,6 +261,12 @@ const openChatRoom = () => {
   text-decoration: none;
   padding: 10px 15px;
   transition: color 0.3s, background-color 0.3s;
+}
+.campus-button {
+  font-size: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 .nav-link:hover,

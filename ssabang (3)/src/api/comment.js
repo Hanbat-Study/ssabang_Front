@@ -1,4 +1,5 @@
-import { localAxios } from "@/util/http-commons";
+import { localAxios } from "@/utils/http-commons";
+import axios from "axios";
 
 const local = localAxios();
 
@@ -10,30 +11,48 @@ const local = localAxios();
 //   local.get(`/board/${articleno}`).then(success).catch(fail);
 // }
 
-function createComment(boardId, content, success, fail) {
-  console.log("boardjs article", article);
-  local.post(`/comment/${boardId}`, content).then(success).catch(fail);
+async function createComment(boardId, content, success, fail) {
+  try {
+    const response = await axios.post(`/comment/${boardId}`, content, { withCredentials: true });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 }
 
 // function getModifyArticle(articleno, success, fail) {
 //   local.get(`/board/modify/${articleno}`).then(success).catch(fail);
 // }
 
-function updateComment(commentId, content, success, fail) {
-  local.patch(`/comment/${commentId}`, content).then(success).catch(fail);
+async function updateComment(commentId, content, success, fail) {
+  try {
+    const response = await axios.patch(
+      `/comment/${commentId}`,
+      { content: content },
+      { withCredentials: true }
+    );
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 }
 
-function deleteComment(commentId, success, fail) {
-  local.delete(`/comment/${commentId}`).then(success).catch(fail);
+async function deleteComment(commentId, success, fail) {
+  try {
+    const response = await axios.delete(`/comment/${commentId}`, { withCredentials: true });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 }
 
-function getCommentsByUser(success, fail) {
-    local.get(`/board/mine`).then(success).catch(fail);
+async function getCommentsByUser(success, fail) {
+  try {
+    const response = await axios.get("/comment/mine", { withCredentials: true });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 }
 
-export {
-    createComment,
-    updateComment,
-    deleteComment,
-    getCommentsByUser
-};
+export { createComment, updateComment, deleteComment, getCommentsByUser };

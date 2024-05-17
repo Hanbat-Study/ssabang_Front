@@ -1,4 +1,5 @@
-import { localAxios } from "@/util/http-commons";
+import { localAxios } from "@/utils/http-commons";
+import axios from "axios";
 
 const local = localAxios();
 
@@ -14,13 +15,17 @@ function getUserProfile(success, fail) {
   local.get(`/user`).then(success).catch(fail);
 }
 
-function updateUserProfile(success, fail) {
-    local.patch(`/user`).then(success).catch(fail);
+async function getUserCampus(success, fail) {
+  try {
+    const response = await axios.get(`/user/campus`, { withCredentials: true });
+    success(response);
+  } catch (error) {
+    fail(error);
   }
+}
 
-export {
-    signUp,
-    logOut,
-    getUserProfile,
-    updateUserProfile,
-};
+function updateUserProfile(success, fail) {
+  local.patch(`/user`).then(success).catch(fail);
+}
+
+export { signUp, logOut, getUserProfile, getUserCampus, updateUserProfile };
