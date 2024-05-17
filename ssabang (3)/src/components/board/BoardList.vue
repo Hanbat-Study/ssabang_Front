@@ -1,6 +1,6 @@
 <template>
   <div class="board-section">
-    <div class="boards">
+    <div class="boards" v-if="paginatedBoards.length > 0">
       <div
         v-for="board in paginatedBoards"
         :key="board.boardId"
@@ -19,6 +19,17 @@
           <span class="date">{{ board.createAt }}</span>
         </div>
       </div>
+    </div>
+    <div v-esle>
+      <lottie-player
+        src="https://lottie.host/3add4552-2bb3-49ae-9833-614b4c31305a/vBfIPXviPZ.json"
+        background="transparent"
+        speed="1"
+        style="width: 500px; height: 500px"
+        loop
+        autoplay
+      ></lottie-player>
+      <h1>게시물이 없습니다.</h1>
     </div>
     <Pagination
       v-if="totalPages > 1"
@@ -92,6 +103,11 @@ onMounted(() => {
   const isFirst = JSON.parse(localStorage.getItem("isFirst"));
   showModal.value = !isFirst;
   fetchData(currentPage.value);
+
+  const script = document.createElement("script");
+  script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
+  script.async = true;
+  document.head.appendChild(script);
 });
 </script>
 
@@ -170,5 +186,14 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+h1 {
+  text-align: center; /* 수평 가운데 정렬 */
+  line-height: 1.5; /* 수직 가운데 정렬 */
+  height: 100px; /* h2 요소의 높이 */
+  display: flex; /* 요소를 행으로 표시 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
 }
 </style>

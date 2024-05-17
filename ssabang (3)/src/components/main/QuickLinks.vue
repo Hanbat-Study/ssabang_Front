@@ -15,14 +15,26 @@ export default {
   data() {
     return {
       links: [
-        { name: '정부24바로가기', url: 'https://www.gov.kr/portal/main/nologin', icon: 'public/gov.png' },
-        { name: 'HUG 바로가기', url: 'https://www.khug.or.kr/index.jsp', icon: 'public/hug.png' },
-        { name: '온통 청년 바로가기', url: 'https://www.youthcenter.go.kr/main.do', icon: 'public/youth-logo.webp' },
-        { name: '자취 백과사전 ', url: 'https://drive.google.com/file/d/1avyMk4ExMPesaMydurg7PEghXr2i9GKT/view?usp=sharing', icon: 'public/dic.png' }
-      ]
+        {
+          name: "정부24바로가기",
+          url: "https://www.gov.kr/portal/main/nologin",
+          icon: "public/gov.png",
+        },
+        { name: "HUG 바로가기", url: "https://www.khug.or.kr/index.jsp", icon: "public/hug.png" },
+        {
+          name: "온통 청년 바로가기",
+          url: "https://www.youthcenter.go.kr/main.do",
+          icon: "public/youth-logo.webp",
+        },
+        {
+          name: "자취 백과사전 ",
+          url: "https://drive.google.com/file/d/1avyMk4ExMPesaMydurg7PEghXr2i9GKT/view?usp=sharing",
+          icon: "public/dic.png",
+        },
+      ],
     };
-  }
-}
+  },
+};
 </script>
 
 <style>
@@ -55,7 +67,7 @@ export default {
   margin-bottom: 10px;
   background-color: #ffffff;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   text-decoration: none;
   transition: background-color 0.3s;
 }

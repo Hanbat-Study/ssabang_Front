@@ -157,6 +157,9 @@ const confirmDeleteBoard = () => {
   }).then((result) => {
     if (result.isConfirmed) {
       deleteBoardHandler();
+      router.push({ name: "board" }).then(() => {
+        window.location.reload();
+      });
     }
   });
 };
