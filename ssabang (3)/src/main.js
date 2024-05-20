@@ -18,5 +18,6 @@ const axiosInstance = axios.create({
 axios.defaults.baseURL = "http://192.168.120.64:8080/api";
 app.config.globalProperties.$axios = axiosInstance;
 
+app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith("lottie-");
 app.use(router);
 app.mount("#app");

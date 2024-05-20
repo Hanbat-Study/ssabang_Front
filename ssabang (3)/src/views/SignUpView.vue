@@ -87,7 +87,7 @@ export default {
       verification: "",
       gender: "",
       campus: "",
-      showVerification: false,
+      showVerification: false, // 여기에 showVerification 변수 추가
       verified: false,
       emailDisabled: false,
       resetDisabled: false,
@@ -115,7 +115,6 @@ export default {
         }
       }, 1000);
     },
-
     stopTimer() {
       clearInterval(this.timer);
       this.timer = null;
@@ -204,7 +203,6 @@ export default {
       }
       if (this.validateEmail(this.email)) {
         console.log(1);
-        this.showVerification = true;
         this.emailDisabled = true;
 
         axios
@@ -219,6 +217,7 @@ export default {
           )
           .then((response) => {
             this.startTimer();
+            this.showVerification = true; // 'this' 추가
             console.log(response.data);
             Swal.fire({
               title: "성공!",
@@ -245,7 +244,6 @@ export default {
         });
       }
     },
-
     async verifyCode() {
       try {
         const response = await axios.post("/email/code", {

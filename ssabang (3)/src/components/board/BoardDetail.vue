@@ -22,7 +22,13 @@
           </div>
         </div>
       </div>
-      <span class="board-date">작성일: {{ board.createAt }}</span>
+      <div style="display: flex; justify-content: space-between">
+        <span class="board-date">작성일: {{ board.createAt }}</span>
+        <span class="board-date" style="margin-right: 10px"
+          >작성자: {{ board.commentHost.name }}</span
+        >
+      </div>
+
       <div class="board-content">
         <div v-if="editMode" class="edit-board-container">
           <textarea
@@ -35,6 +41,14 @@
           {{ board.content }}
         </div>
       </div>
+      <div v-if="board.imageUrl" class="board-image">
+        <img
+          :src="board.imageUrl"
+          alt="Board Image"
+          @click="showImageModal(board.imageUrl)"
+          style="cursor: pointer"
+        />
+      </div>
       <div v-if="editMode" class="edit-buttons-container">
         <button @click="cancelEdit" class="cancel-button">취소</button>
         <button @click="editBoardHandler" class="save-button">저장</button>
@@ -46,11 +60,14 @@
       @edit-comment="editCommentHandler"
       @delete-comment="deleteCommentHandler"
     />
+    <div class="back-button-container">
+      <button @click="goToListPage" class="back-button">목록으로</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import CommentSection from "./CommentSection.vue";
 import { useClickOutside } from "@/services/useClickOutside";
@@ -61,9 +78,15 @@ import Swal from "sweetalert2";
 const route = useRoute();
 const router = useRouter();
 
+const emit = defineEmits(["commentListUpdated"]);
+
 const board = ref({
   title: "",
   content: "",
+  imageUrl: "",
+  commentHost: {
+    name: "",
+  },
   isHost: false,
   commentList: [],
 });
@@ -87,18 +110,6 @@ const fetchBoardDetails = async () => {
     }
   );
 };
-
-// API 호출 대신 더미 데이터 사용
-// const fetchBoardDetails = async () => {
-//   console.log('Fetching board details')
-//   const boardId = parseInt(route.params.id, 10);
-//   const foundBoard = dummyBoards.find(b => b.id === boardId);
-//   if (foundBoard) {
-//     board.value = foundBoard;
-//   } else {
-//     console.error('Board not found');
-//   }
-// };
 
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
@@ -128,6 +139,7 @@ const editBoardHandler = () => {
       board.value.content = editBoardContent.value;
       editMode.value = false;
       fetchBoardDetails(); // 게시글 수정 후 페이지 갱신
+      emit("commentListUpdated", "editBoard" + route.params.id + editBoardContent.value);
       console.log("Board updated:", response);
 
       // 수정 완료 모달창 표시
@@ -169,6 +181,7 @@ const deleteBoardHandler = () => {
     route.params.id,
     () => {
       Swal.fire("삭제 완료!", "게시글이 삭제되었습니다.", "success").then(() => {
+        emit("commentListUpdated", "deleteBoard" + route.params.id);
         router.push({ name: "board" }); // 목록 페이지로 리다이렉트
       });
     },
@@ -191,6 +204,8 @@ const addCommentHandler = (content) => {
     content,
     (response) => {
       fetchBoardDetails(); // 댓글 추가 후 페이지 갱신
+      emit("commentListUpdated", "add-comment" + response.data.data.commentId);
+      console.log(response.data.data.boardId);
     },
     (error) => {
       console.error("Error adding comment:", error);
@@ -211,6 +226,7 @@ const editCommentHandler = ({ id, content }) => {
         confirmButtonText: "확인",
       }).then(() => {
         fetchBoardDetails(); // 댓글 수정 후 페이지 갱신
+        emit("commentListUpdated", "edit-comment" + id + content);
       });
     },
     (error) => {
@@ -229,14 +245,39 @@ const deleteCommentHandler = (id) => {
   deleteComment(
     id,
     () => {
-      console.log("Comment deleted:", id);
       fetchBoardDetails(); // 댓글 삭제 후 페이지 갱신
+      emit("commentListUpdated", "delete-comment" + id);
+      console.log("Comment deleted:", id);
     },
     (error) => {
       console.error("Error deleting comment:", error);
     }
   );
 };
+
+const showImageModal = (imageUrl) => {
+  Swal.fire({
+    imageUrl: imageUrl,
+    imageAlt: "Board Image",
+    showCloseButton: true,
+    showConfirmButton: false,
+    width: "50%",
+  });
+};
+
+const goToListPage = () => {
+  router.push("/board");
+};
+
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      fetchBoardDetails();
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(() => {
   fetchBoardDetails();
@@ -255,7 +296,7 @@ onMounted(() => {
 
 .content-box {
   padding: 20px;
-  height: 400px;
+  height: 80%;
   background: #fff;
   border-radius: 4px;
   margin-bottom: 40px;
@@ -349,11 +390,12 @@ h1 {
 }
 
 .edit-buttons-container {
-  position: absolute;
-  bottom: 20px;
+  bottom: 10px;
   right: 20px;
   display: flex;
   gap: 10px;
+  margin-top: 20px;
+  justify-content: right;
 }
 
 .save-button,
@@ -372,5 +414,60 @@ h1 {
 
 span {
   padding-top: 15px;
+}
+
+.board-image {
+  margin-top: 50px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.board-image img {
+  max-width: 70%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swal2-image-modal .swal2-popup {
+  width: auto !important;
+  max-width: 80% !important;
+}
+.swal2-image-modal .swal2-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.back-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background-color: #007bff; /* Primary button color */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
+  transform: scale(1.05); /* Slightly larger on hover */
+}
+
+.back-button:active {
+  background-color: #004085; /* Even darker shade for active state */
+  transform: scale(0.98); /* Slightly smaller on active */
+}
+
+.back-button:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Custom focus outline */
 }
 </style>

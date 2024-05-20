@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div v-esle>
+    <div v-else>
       <lottie-player
         src="https://lottie.host/3add4552-2bb3-49ae-9833-614b4c31305a/vBfIPXviPZ.json"
         background="transparent"
@@ -64,7 +64,6 @@ const totalPages = computed(() => Math.ceil(boards.value.length / itemsPerPage))
 
 const fetchData = async (page) => {
   currentPage.value = page;
-  console.log(currentPage.value);
   getBoards(
     (response) => {
       boards.value = response.data.data.map((board) => ({
@@ -85,14 +84,7 @@ const fetchData = async (page) => {
 };
 
 const goToBoardDetail = (id) => {
-  // const isLoggedIn = localStorage.getItem('isFirst') === 'true';
-  // if (isLoggedIn) {
   router.push({ name: "boardDetail", params: { id } });
-  // } else {
-  //   showModal.value = true;
-  //   console.log('Modal should be visible now:', showModal.value);
-
-  // }
 };
 
 const closeModal = () => {
@@ -103,11 +95,6 @@ onMounted(() => {
   const isFirst = JSON.parse(localStorage.getItem("isFirst"));
   showModal.value = !isFirst;
   fetchData(currentPage.value);
-
-  const script = document.createElement("script");
-  script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
-  script.async = true;
-  document.head.appendChild(script);
 });
 </script>
 

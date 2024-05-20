@@ -2,10 +2,10 @@
   <div class="board-container">
     <div class="profile-section">
       <UserProfile />
-      <UserActivities v-if="isLoggedIn" />
+      <UserActivities v-if="isLoggedIn" :comments="comments" />
     </div>
     <div class="board-section">
-      <router-view></router-view>
+      <router-view @comment-list-updated="handleCommentList"></router-view>
     </div>
   </div>
 </template>
@@ -22,6 +22,13 @@ export default {
   },
   setup() {
     const isLoggedIn = ref(false);
+    props: ["comments"];
+    const comments = ref([]);
+
+    const handleCommentList = (commentList) => {
+      console.log("Comment was updated!", commentList);
+      comments.value = commentList;
+    };
 
     onMounted(() => {
       const isFirst = JSON.parse(localStorage.getItem("isFirst"));
@@ -30,6 +37,8 @@ export default {
 
     return {
       isLoggedIn,
+      comments,
+      handleCommentList,
     };
   },
 };
