@@ -338,6 +338,7 @@ const onLoadMap = (mapObject) => {
       emit("update:center", { lat: center.lat(), lng: center.lng(), zoom: zoomLevel });
       fetchRegions(center, zoomLevel);
       removePolygons(); // Remove polygons on map center change
+      clearActivePolygon();
     }
   });
 

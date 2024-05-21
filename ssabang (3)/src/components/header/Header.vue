@@ -192,7 +192,7 @@ const openChatRoom = () => {
             구미: "https://open.kakao.com/o/gJdEOHjg",
             "12기 준비": "https://open.kakao.com/o/gQYSpD9",
           };
-          window.location.href = chatRoomLinks[value];
+          window.open(chatRoomLinks[value], "_blank");
         } else {
           resolve("도시를 선택해 주세요.");
         }

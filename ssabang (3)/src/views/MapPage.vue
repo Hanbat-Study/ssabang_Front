@@ -84,7 +84,7 @@ export default {
       try {
         const response = await axios.get(url);
         properties.value = response.data.rooms;
-        console.log(properties.value);
+        // console.log(properties.value);
         isLoading.value = false;
       } catch (error) {
         console.error("Failed to fetch properties:", error);

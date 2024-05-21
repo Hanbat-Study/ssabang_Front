@@ -15,14 +15,30 @@ export default {
   data() {
     return {
       links: [
-        { name: '홈페이지', url: 'https://www.ssafy.com/ksp/jsp/swp/swpMain.jsp', icon: '/public/ssafy.jpg' },
-        { name: '유튜브', url: 'https://www.youtube.com/channel/UC_XI3ByFO1uZIIH-g-zJZiw/featured', icon: '/public/youtube.png' },
-        { name: '인스타그램', url: 'https://www.instagram.com/hellossafy/', icon: '/public/instagram.png' },
-        { name: '카카오톡 채녈', url: 'https://pf.kakao.com/_Vhxoxnxb', icon: '/public/kakaotalk.svg' }
-      ]
+        {
+          name: "홈페이지",
+          url: "https://www.ssafy.com/ksp/jsp/swp/swpMain.jsp",
+          icon: "/public/ssafy.jpg",
+        },
+        {
+          name: "유튜브",
+          url: "https://www.youtube.com/channel/UC_XI3ByFO1uZIIH-g-zJZiw/featured",
+          icon: "/public/youtube.png",
+        },
+        {
+          name: "인스타그램",
+          url: "https://www.instagram.com/hellossafy/",
+          icon: "/public/instagram.png",
+        },
+        {
+          name: "카카오톡 채널",
+          url: "https://pf.kakao.com/_Vhxoxnxb",
+          icon: "/public/kakaotalk.svg",
+        },
+      ],
     };
-  }
-}
+  },
+};
 </script>
 
 <style>
@@ -55,7 +71,7 @@ export default {
   margin-bottom: 10px;
   background-color: #ffffff;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   text-decoration: none;
   transition: background-color 0.3s;
 }

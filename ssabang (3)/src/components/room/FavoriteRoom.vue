@@ -26,6 +26,7 @@
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   props: {
@@ -46,7 +47,14 @@ export default {
             isFavorite.value = false;
             emit("toggleFavorite", room);
           })
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            console.error(error);
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: error.response?.data?.reason || "Something went wrong!",
+            });
+          });
       } else {
         axios
           .post(
@@ -66,7 +74,14 @@ export default {
             isFavorite.value = true;
             emit("toggleFavorite", room);
           })
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            console.error(error);
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: error.response?.data?.reason || "Something went wrong!",
+            });
+          });
       }
     };
 
@@ -80,7 +95,10 @@ export default {
     }
 
     const navigateToDetailPage = (roomId) => {
-      router.push({ path: `/room/detail/${roomId}` });
+      router.push({
+        path: `/room/detail/${roomId}`,
+        query: { favoriteRoom: JSON.stringify(props.room) },
+      });
     };
 
     const roomId = props.room.roomId ? props.room.roomId : props.room.id;

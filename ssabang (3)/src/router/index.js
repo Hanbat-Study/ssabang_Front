@@ -35,6 +35,9 @@ const routes = [
     path: "/room/detail/:id",
     name: "RoomDetail",
     component: RoomDetail,
+    props: (route) => ({
+      favoriteRoom: route.query.favoriteRoom ? JSON.parse(route.query.favoriteRoom) : null,
+    }),
   },
   {
     path: "/board",
@@ -49,7 +52,9 @@ const routes = [
         path: "detail/:id",
         name: "boardDetail",
         component: BoardDetail,
-        props: true,
+        props: (route) => ({
+          favoriteRoom: route.query.favoriteRoom ? JSON.parse(route.query.favoriteRoom) : null,
+        }),
       },
       {
         path: "write",

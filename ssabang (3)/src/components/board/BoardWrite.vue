@@ -18,7 +18,7 @@
       </div>
       <div id="root">
         <h2 class="title">File Upload</h2>
-        <hr />
+        <hr width="80%" />
         <div class="contents">
           <div class="upload-box">
             <div id="drop-file" class="drag-file" ref="dropArea">
@@ -28,14 +28,20 @@
                 class="image"
               />
               <p class="message">Drag files to upload</p>
-              <img src="" alt="미리보기 이미지" class="preview" />
+              <img
+                v-if="previewUrl"
+                :src="previewUrl"
+                alt="미리보기 이미지"
+                class="preview"
+                :style="{ display: previewUrl ? 'block' : 'none' }"
+              />
             </div>
             <label class="file-label" for="chooseFile">Choose File</label>
             <input
               class="file"
               id="chooseFile"
               type="file"
-              @change="onFileChange($event)"
+              @change="onFileChange"
               accept="image/png, image/jpeg, image/gif"
             />
           </div>
@@ -68,8 +74,8 @@ export default {
         selectedFile.value = file;
         const reader = new FileReader();
         reader.onload = () => {
-          uploadFile(file);
           previewUrl.value = reader.result;
+          uploadFile(file);
         };
         reader.readAsDataURL(file);
       } else {
@@ -260,7 +266,8 @@ textarea {
 }
 
 .submit-button {
-  width: calc(100% - 40px);
+  /* width: calc(100% - 40px); */
+  width: 80%;
   padding: 10px 20px;
   background: #007bff;
   color: white;
@@ -305,13 +312,14 @@ textarea {
 
 .contents .upload-box .drag-file {
   position: relative;
-  width: 100%;
+  width: 70%;
   height: 360px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   border: 3px dashed #dbdbdb;
+  margin-left: 15px;
 }
 .contents .upload-box .drag-file.highlight {
   border: 3px dashed red;

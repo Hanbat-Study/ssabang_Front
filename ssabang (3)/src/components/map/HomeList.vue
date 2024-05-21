@@ -40,6 +40,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   props: {
@@ -84,6 +85,11 @@ export default {
           console.log("Room added to favorites.");
         }
       } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.response?.data?.reason || "Something went wrong!",
+        });
         console.error("Error toggling favorite status:", error);
       }
     };
@@ -106,7 +112,7 @@ export default {
         });
         favoriteRooms.value = favoriteStatus;
       } catch (error) {
-        console.error("Error fetching favorite status:", error);
+        // console.error("Error fetching favorite status:", error);
       }
     };
 
@@ -122,7 +128,21 @@ export default {
   },
   methods: {
     goToRoom(id) {
-      this.$router.push(`/room/detail/${id}`);
+      const room = this.rooms.find((room) => room.id === id);
+      const favoriteRoom = {
+        imgUrl: room.img_url,
+        priceTitle: room.price_title,
+        roomDesc2: room.room_desc2,
+        title: room.title,
+        roomId: room.id,
+        roomTypeStr: room.room_type_str,
+        complexName: room.complex_name,
+      };
+      console.log(favoriteRoom);
+      this.$router.push({
+        path: `/room/detail/${id}`,
+        query: { favoriteRoom: JSON.stringify(favoriteRoom) },
+      });
       this.saveRecentRoom(id);
     },
     saveRecentRoom(id) {

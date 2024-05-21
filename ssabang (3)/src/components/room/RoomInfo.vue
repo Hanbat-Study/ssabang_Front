@@ -42,8 +42,8 @@
         <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            :fill="room.isFavorite ? 'red' : 'none'"
-            :stroke="room.isFavorite ? 'red' : 'black'"
+            :fill="isFavorite ? 'red' : 'none'"
+            :stroke="isFavorite ? 'none' : 'black'"
             stroke-width="2"
           />
         </svg>
@@ -55,8 +55,9 @@
 
 <script>
 import axios from "axios";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 export default {
   props: {
@@ -68,47 +69,73 @@ export default {
       type: Object,
       required: true,
     },
+    favoriteRoom: {
+      type: Object,
+      default: null,
+    },
   },
   setup(props) {
     const router = useRouter();
+    const route = useRoute();
     const isLoggedIn = ref(JSON.parse(localStorage.getItem("isFirst")) || false);
-    const favoriteRooms = ref({});
+    const isFavorite = ref(false);
+    const roomId = computed(() => {
+      return route.params.id;
+    });
 
     const toggleFavorite = async (room) => {
       if (!isLoggedIn.value) {
         router.push({ name: "login" });
         return;
       }
-
-      const isFavorite = favoriteRooms.value[room.id];
       try {
-        if (isFavorite) {
-          await axios.delete(`/favorite-room/${room.id}`, { withCredentials: true });
-          favoriteRooms.value = { ...favoriteRooms.value, [room.id]: false };
-          room.isFavorite = false;
+        if (isFavorite.value) {
+          await axios.delete(`/favorite-room/${roomId.value}`, { withCredentials: true }); // 여기 수정
+          isFavorite.value = false;
+          console.log(isFavorite.value);
         } else {
-          const favoriteRoom = {
-            imgUrl: room.img_url,
-            priceTitle: room.price_title,
-            roomDesc2: room.room_desc2,
-            title: room.title,
-            roomId: room.id,
-            roomTypeStr: room.room_type_str,
-            complexName: room.complex_name,
+          const favoriteRoomData = {
+            imgUrl: props.favoriteRoom.imgUrl,
+            priceTitle: props.favoriteRoom.priceTitle,
+            roomDesc2: props.favoriteRoom.roomDesc2,
+            title: props.favoriteRoom.title,
+            roomId: props.favoriteRoom.roomId,
+            roomTypeStr: props.favoriteRoom.roomTypeStr,
+            complexName: props.favoriteRoom.complexName,
           };
-
-          await axios.post("/favorite-room", favoriteRoom, { withCredentials: true });
-          favoriteRooms.value = { ...favoriteRooms.value, [room.id]: true };
-          room.isFavorite = true;
+          await axios.post("/favorite-room", favoriteRoomData, {
+            headers: {
+              "Content-Type": "application/json", // 명시적으로 JSON 설정
+            },
+            withCredentials: true,
+          });
+          isFavorite.value = true;
+          console.log(isFavorite.value);
         }
       } catch (error) {
-        console.error("Error toggling favorite status:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.response?.data?.reason || "Something went wrong!",
+        });
       }
     };
 
+    onMounted(() => {
+      axios
+        .get(`/favorite-room/check/${roomId.value}`, { withCredentials: true })
+        .then((response) => {
+          isFavorite.value = response.data.data.isFavorite; // API 응답으로 isFavorite 상태 업데이트
+          console.log(isFavorite.value);
+        })
+        .catch((error) => console.error(error));
+    });
+
     return {
       isLoggedIn,
+      isFavorite,
       toggleFavorite,
+      roomId,
     };
   },
 };
@@ -210,7 +237,7 @@ export default {
   padding: 14px 24px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 23px;
+  font-size: 20px;
 }
 
 .favorite-button {
@@ -223,16 +250,5 @@ export default {
 .favorite-button svg {
   width: 35px;
   height: 35px;
-}
-
-.favorite-button svg path {
-  fill: none;
-  stroke: black;
-  stroke-width: 2;
-}
-
-.favorite-button svg path.favorited {
-  fill: red;
-  stroke: red;
 }
 </style>
