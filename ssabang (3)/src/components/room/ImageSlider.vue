@@ -17,7 +17,7 @@
     </div>
   </div>
   <!-- 이미지가 없거나 로딩 중일 때 메시지 -->
-  <div v-else>이미지를 로딩 중입니다...</div>
+  <!-- <div v-else>이미지를 로딩 중입니다...</div> -->
 </template>
 
 <script>
@@ -34,8 +34,9 @@ export default {
 <style scoped>
 .slider {
   position: relative;
-  width: 100%;
-  overflow: hidden;
+  width: 1300px;
+  height: 500px;
+  margin: auto;
 }
 
 .slides {
@@ -43,20 +44,26 @@ export default {
   height: auto;
 }
 
-.first-slide img,
+.first-slide img {
+  width: 100%;
+  height: 510px; /* 높이 직접 지정 */
+  object-fit: cover;
+}
+
 .grid-slide img {
   width: 100%;
-  height: 100%;
+  height: 250px; /* 높이 직접 지정 */
   object-fit: cover;
 }
 
 .first-slide {
   width: 50%;
-  height: auto;
+  height: auto; /* 높이 자동 조절 */
 }
 
 .grid-slides {
   width: 50%;
+  height: auto; /* 높이 자동 조절 */
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
@@ -65,12 +72,7 @@ export default {
 
 .grid-slide {
   width: 100%;
-  height: 100%;
-}
-
-.grid-slide img {
-  width: 100%;
-  height: 100%;
+  height: auto; /* 높이 자동 조절 */
 }
 
 .view-all-btn-container {

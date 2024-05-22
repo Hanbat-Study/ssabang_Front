@@ -1,6 +1,14 @@
 <template>
   <div class="centeredImage">
-    <img src="@/assets/drawing-2802.gif" alt="이미지 설명" />
+    <!-- <img src="@/assets/drawing-2802.gif" alt="이미지 설명" /> -->
+    <lottie-player
+      src="https://lottie.host/19ad20b0-4254-4981-893f-fa7e7e047f58/wdbOpNtJqM.json"
+      background="transparent"
+      speed="1"
+      style="width: 500px; height: 500px"
+      loop
+      autoplay
+    ></lottie-player>
   </div>
 </template>
 

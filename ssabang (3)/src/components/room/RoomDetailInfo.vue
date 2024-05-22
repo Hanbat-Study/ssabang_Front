@@ -117,24 +117,31 @@
       <h2>위치 및 주변시설</h2>
       <p>{{ nearData.address }}</p>
       <naver-map
-        style="width: 80%; height: 40vh"
+        style="width: 100%; height: 50vh"
         :mapOptions="mapOptions"
         :initLayers="initLayers"
         @onLoad="onLoadMap"
       ></naver-map>
       <div class="map-marker-buttons">
-        <!-- <button class="show-marker-button" @click="toggleCCTVMarkers">
-          <img src="@/assets/cctv.png" alt="CCTV Icon" class="icon" />
-          {{ cctvMarkersVisible ? 'CCTV 위치 가리기' : 'CCTV 위치 보기' }}
-        </button>
         <button class="show-marker-button" @click="toggleCafeMarkers">
           <img src="@/assets/cafe.png" alt="Cafe Icon" class="icon" />
-          {{ cafeMarkersVisible ? '카페 위치 가리기' : '카페 위치 보기' }}
-        </button> -->
+          {{ cafeMarkersVisible ? "카페 위치 가리기" : "카페 위치 보기" }}
+        </button>
         <button class="show-marker-button" @click="toggleBusMarkers">
           <img src="@/assets/bus-stop.png" alt="Bus Icon" class="icon" />
           {{ busMarkersVisible ? "셔틀 위치 가리기" : "셔틀 위치 보기" }}
         </button>
+      </div>
+    </div>
+    <div class="section">
+      <h2>상세정보</h2>
+      <div class="memo-section">
+        <div class="memo-item">
+          <strong>{{ room.title }}</strong>
+        </div>
+        <div class="memo-item">
+          <p>{{ room.memo }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -155,21 +162,19 @@ const props = defineProps({
 });
 
 const nearData = ref({});
-const cctvMarkersVisible = ref(false);
 const cafeMarkersVisible = ref(false);
 const busMarkersVisible = ref(false);
 const map = ref(null);
 const isSquareMeters = ref(true);
-const cctvMarkers = [];
 const cafeMarkers = [];
 const busMarkers = [];
 const infoWindows = [];
 
 const mapOptions = ref({
   center: new naver.maps.LatLng(37.3595704, 127.105399),
-  zoom: 15,
-  minZoom: 15,
-  maxZoom: 15,
+  zoom: 16,
+  minZoom: 16,
+  maxZoom: 16,
 });
 
 const initLayers = ["background", "layer"];
@@ -208,22 +213,21 @@ watch(
   }
 );
 
-const toggleCCTVMarkers = () => {
-  cctvMarkersVisible.value = !cctvMarkersVisible.value;
-  cctvMarkers.forEach((marker) => {
-    console.log(marker);
-    marker.setMap(cctvMarkersVisible.value ? map.value : null);
-  });
-  console.log("CCTV Markers Toggled:", cctvMarkersVisible.value);
-};
+watch(cafeMarkersVisible, (newVal) => {
+  if (map.value) {
+    addCafeMarkers();
+  }
+});
 
 const toggleCafeMarkers = () => {
   cafeMarkersVisible.value = !cafeMarkersVisible.value;
   cafeMarkers.forEach((marker) => {
-    console.log(marker);
     marker.setMap(cafeMarkersVisible.value ? map.value : null);
   });
-  if (!cafeMarkersVisible.value) cafeMarkers.value = [];
+  if (!cafeMarkersVisible.value) {
+    cafeMarkers.forEach((marker) => marker.setMap(null));
+    cafeMarkers.length = 0; // Clear the markers array when hidden
+  }
   console.log("Cafe Markers Toggled:", cafeMarkersVisible.value);
 };
 
@@ -240,57 +244,37 @@ const toggleBusMarkers = () => {
 
 const onLoadMap = (mapObject) => {
   map.value = mapObject;
-  if (nearData.value.safety && nearData.value.safety > 0) {
-    console.log("addmarkers");
-    addMarkers();
+  if (nearData.value.safety && nearData.value.safety.length > 0) {
+    addCafeMarkers();
   }
   drawCircle(nearData.value.random_location);
   busRoutes.forEach(createMarkersForRoute);
+  naver.maps.Event.addListener(map.value, "click", () => {
+    infoWindows.forEach((infoWindow) => infoWindow.close());
+  });
 };
-const addMarkers = () => {
-  console.log(nearData.value);
-  if (nearData.value.safety && nearData.value.safety.length > 0) {
-    console.log("Adding markers for safety POIs:", nearData.value.safety);
-    const cctvIcon = {
-      content: `<img src="@/assets/cctv.png" alt="CCTV Icon" style="width: 24px; height: 24px;" />`,
-      anchor: new naver.maps.Point(12, 12),
-    };
-    const cafeIcon = {
-      content: `<img src="@/assets/cafe.png" alt="Cafe Icon" style="width: 24px; height: 24px;" />`,
-      anchor: new naver.maps.Point(12, 12),
-    };
 
-    // Adding CCTV markers
-    const cctvData = nearData.value.safety.find((item) => item.query === "CCTV");
-    if (cctvData && cctvData.pois) {
-      console.log("CCTV Data:", cctvData);
-      cctvData.pois.forEach((location) => {
-        console.log("Adding CCTV marker:", location);
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(location.location[1], location.location[0]),
-          map: cctvMarkersVisible.value ? map.value : null,
-          icon: cctvIcon,
-          zIndex: 100,
-        });
-        cctvMarkers.push(marker);
-      });
-    }
+const addCafeMarkers = () => {
+  console.log("Adding markers for convenience POIs:", nearData.value.convenience);
+  const cafeIcon = {
+    content: `<img src="/cafe.png" alt="Cafe Icon" style="width: 35px; height: 35px;" />`,
+    anchor: new naver.maps.Point(12, 12),
+  };
 
-    // Adding Cafe markers
-    const cafeData = nearData.value.convenience.find((item) => item.query === "CE7");
-    console.log("Cafe Data:", cafeData);
-    if (cafeData && cafeData.pois) {
-      cafeData.pois.forEach((location) => {
-        console.log("Adding Cafe marker:", location);
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(location.location[1], location.location[0]),
-          map: cafeMarkersVisible.value ? map.value : null,
-          icon: cafeIcon,
-          zIndex: 100,
-        });
-        cafeMarkers.push(marker);
+  // Adding Cafe markers
+  const cafeData = nearData.value.convenience.find((item) => item.query === "CE7");
+  console.log("Cafe Data:", cafeData);
+  if (cafeData && cafeData.pois) {
+    cafeData.pois.forEach((location) => {
+      console.log("Adding Cafe marker:", location);
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(location.location[1], location.location[0]),
+        map: cafeMarkersVisible.value ? map.value : null,
+        icon: cafeIcon,
+        zIndex: 100,
       });
-    }
+      cafeMarkers.push(marker);
+    });
   }
 };
 
@@ -324,7 +308,7 @@ const createMarkersForRoute = (route) => {
       position: new naver.maps.LatLng(coord[0], coord[1]),
       map: busMarkersVisible.value ? map.value : null,
       icon: {
-        content: `<div style="background-color: ${route.color}; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+        content: `<div style="background-color: ${route.color}; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
           <span style="color: white; position: absolute;">${route.id}</span>
         </div>`,
         anchor: new naver.maps.Point(15, 15),
@@ -363,7 +347,7 @@ const createMarkersForRoute = (route) => {
 }
 
 h2 {
-  font-size: 40px;
+  font-size: 36px;
   font-weight: bold;
   margin-bottom: 16px;
   color: #333;
@@ -374,7 +358,7 @@ h2 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  font-size: 20px;
+  font-size: 18px;
   /* 폰트 크기 키움 */
 }
 
@@ -386,7 +370,7 @@ h2 {
 }
 
 .detail-item p {
-  font-size: 20px;
+  font-size: 18px;
   /* 폰트 크기 키움 */
   line-height: 26px;
   font-weight: 400;
@@ -444,30 +428,32 @@ button:hover {
 
 .map-marker-buttons {
   display: flex;
-  justify-content: left;
+  /* justify-content: left; */
   margin-top: 10px;
 }
 
 .show-marker-button {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: #f8f8f8;
+  border: 2px solid #ccc;
+  border-radius: 8px;
   padding: 10px 20px;
   cursor: pointer;
   font-size: 14px;
   color: #333;
   display: flex;
   align-items: center;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .show-marker-button img.icon {
   margin-right: 8px;
-  width: 24px;
-  height: 24px;
+  width: 35px;
+  height: 35px;
 }
 
 .show-marker-button:hover {
-  background: #f0f0f0;
+  background: #e0e0e0;
+  border-color: #999;
 }
 
 .info-window {
@@ -503,5 +489,30 @@ button:hover {
   border-style: solid;
   border-width: 10px 10px 0 10px;
   border-color: #fff transparent transparent transparent;
+}
+
+.memo-section {
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 8px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.memo-item {
+  margin-bottom: 16px;
+}
+
+.memo-item h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.memo-item p {
+  font-size: 16px;
+  color: #555;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>

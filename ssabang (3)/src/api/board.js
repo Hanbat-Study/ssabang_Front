@@ -56,8 +56,13 @@ async function getBoardsByUser(success, fail) {
   }
 }
 
-function getBoards(success, fail) {
-  local.get(`/board/list`).then(success).catch(fail);
+async function getBoards(success, fail) {
+  try {
+    const response = await axios.get(`/board/list`, { withCredentials: true });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 }
 
 export { createBoard, getBoardDetail, getBoardsByUser, updateBoard, deleteBoard, getBoards };

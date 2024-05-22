@@ -61,6 +61,7 @@
         v-model="newComment"
         placeholder="댓글을 입력하세요..."
         class="new-comment-textarea"
+        @keydown.enter.prevent="submitComment"
       ></textarea>
       <button @click="submitComment" class="submit-comment-button">댓글 추가</button>
     </div>

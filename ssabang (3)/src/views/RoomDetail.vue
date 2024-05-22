@@ -16,7 +16,7 @@
       </div>
     </div>
     <div v-if="showContactModal" class="modal-overlay">
-      <div class="modal-content agent-info-modal">
+      <div class="agent-info-modal">
         <div class="modal-header">
           <h2>연락처 보기</h2>
           <h2 class="close" @click="showContactModal = false">&times;</h2>
@@ -36,8 +36,13 @@
             class="swiper-button-prev"
             @click="prevImage"
           />
-          <div class="modal-slide">
-            <img :src="currentImageUrl" class="slide-image" alt="Slide Image" />
+          <div
+            class="image-list"
+            :style="{ transform: `translateX(-${currentImageIndex * 100}%)` }"
+          >
+            <div v-for="(image, index) in roomDetails.image_list" :key="index" class="modal-slide">
+              <img :src="image.prefix_url + image.id" class="slide-image" alt="Slide Image" />
+            </div>
           </div>
           <img
             src="@/assets/Property 1=CaretCircleRight_hover.svg"
@@ -52,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import ImageSlider from "@/components/room/ImageSlider.vue";
@@ -77,11 +82,6 @@ const fetchRoomDetails = async () => {
 const handleShowModal = () => {
   showModal.value = true;
 };
-
-const currentImageUrl = computed(() => {
-  const image = roomDetails.value.image_list[currentImageIndex.value];
-  return image ? image.prefix_url + image.id : "";
-});
 
 const prevImage = () => {
   currentImageIndex.value =
@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
 
 .left-component {
   flex: 2;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 .right-component {
@@ -146,6 +146,7 @@ onBeforeUnmount(() => {
   position: sticky;
   top: 0;
   height: calc(100vh - 60px);
+  margin-right: 100px;
 }
 
 .modal-overlay {
@@ -163,9 +164,8 @@ onBeforeUnmount(() => {
 
 .modal-content {
   position: relative;
-  width: 80%;
-  max-width: 900px;
-  height: 80%;
+  width: 1000px;
+  height: 700px;
   background: white;
   padding: 16px;
   overflow-y: auto;
@@ -189,6 +189,20 @@ onBeforeUnmount(() => {
   margin-left: auto;
 }
 
+.agent-info-modal {
+  position: relative;
+  width: 30%;
+  height: 45%;
+  background: white;
+  padding: 16px;
+  overflow-y: auto;
+  border-radius: 8px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .agent-info-modal .close {
   position: static;
 }
@@ -204,13 +218,21 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.image-list {
+  display: flex;
+  flex-direction: row;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
 }
 
 .modal-slide {
   width: 100%;
-  height: 80%;
+  height: 600px;
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
@@ -242,15 +264,30 @@ onBeforeUnmount(() => {
 }
 
 .swiper-button-prev {
-  left: 10px; /* 원하는 위치로 조정하세요 */
+  left: -5px;
 }
 
 .swiper-button-next {
-  right: 10px; /* 원하는 위치로 조정하세요 */
+  right: -5px;
 }
 
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
-  background-color: rgba(0, 0, 0, 0.7); /* 호버 시 배경색을 더 어둡게 변경 */
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+.slide-leave-active {
+  position: absolute;
 }
 </style>

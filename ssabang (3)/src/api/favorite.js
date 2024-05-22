@@ -7,6 +7,15 @@ function getFavoriteRooms(success, fail) {
   local.get(`/favorite-room`).then(success).catch(fail);
 }
 
+async function getFavoriteRooms(success, fail) {
+  try {
+    const response = await axios.get(`/favorite-room`, { withCredentials: true });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
+}
+
 async function addFavoriteRoom(room, success, fail) {
   try {
     const response = await axios.post(`/favorite-room`, room, { withCredentials: true });

@@ -50,7 +50,16 @@
       </button>
     </div>
   </div>
-  <div v-else>loading...</div>
+  <div v-else>
+    <lottie-player
+      src="https://lottie.host/19ad20b0-4254-4981-893f-fa7e7e047f58/wdbOpNtJqM.json"
+      background="transparent"
+      speed="1"
+      style="width: 500px; height: 500px"
+      loop
+      autoplay
+    ></lottie-player>
+  </div>
 </template>
 
 <script>
@@ -206,14 +215,14 @@ export default {
 }
 
 .room-info {
-  margin-top: 24px;
-  padding-bottom: 24px;
+  margin-top: 15px;
+  padding-bottom: 15px;
   font-size: 16px;
-  line-height: 26px;
+  line-height: 20px;
 }
 
 .info-item {
-  font-size: 20px;
+  font-size: 18px;
   line-height: 26px;
   margin-bottom: 8px;
 }
@@ -231,7 +240,7 @@ export default {
 }
 
 .contact-button {
-  background-color: #007bff;
+  background-color: rgb(50, 108, 249);
   color: #fff;
   border: none;
   padding: 14px 24px;
