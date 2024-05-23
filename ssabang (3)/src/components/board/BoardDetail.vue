@@ -24,9 +24,6 @@
       </div>
       <div style="display: flex; justify-content: space-between">
         <span class="board-date">작성일: {{ board.createAt }}</span>
-        <span class="board-date" style="margin-right: 10px"
-          >작성자: {{ board.commentHost.name }}</span
-        >
       </div>
 
       <div class="board-content">

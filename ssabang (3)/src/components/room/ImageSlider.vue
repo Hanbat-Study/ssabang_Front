@@ -79,6 +79,7 @@ export default {
   display: flex;
   justify-content: right;
   margin-top: -60px;
+  margin-right: 20px;
 }
 
 .view-all-btn {

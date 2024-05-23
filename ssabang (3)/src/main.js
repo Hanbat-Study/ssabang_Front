@@ -4,6 +4,8 @@ import router from "./router";
 import axios from "axios";
 import { createNaverMap } from "vue3-naver-maps";
 import { getCookie, setCookie, deleteCookie } from "@/utils/cookieUtils";
+import VueScrollTo from "vue-scrollto";
+import "./assets/global.css"; // 글로벌 스타일 시트 추가
 
 window.Kakao.init("eeaf9c970276a533c2df6ac32f1c0c28");
 
@@ -61,4 +63,5 @@ axios.interceptors.response.use(
 
 app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith("lottie-");
 app.use(router);
+app.use(VueScrollTo);
 app.mount("#app");

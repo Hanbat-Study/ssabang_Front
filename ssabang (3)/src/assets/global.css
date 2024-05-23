@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "ssabang";
+  src: url("@/assets/font/ssabang.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body,
+p,
+h2,
+h3,
+h4,
+span,
+button,
+strong,
+input,
+textarea,
+select {
+  font-family: "ssabang", sans-serif;
+}
